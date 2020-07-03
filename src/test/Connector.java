@@ -23,7 +23,6 @@ public static Connection getConnection() {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	
 	}
 	return conn;
 }
@@ -35,9 +34,6 @@ public static Connection getConnection() {
 				e.printStackTrace();
 			}
 		}
+		conn = null;
 	}
-
-public static void main(String[] args) {
-	getConnection();
-}
 }

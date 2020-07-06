@@ -1,7 +1,5 @@
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.PreparedStatement"%>
-<%@page import="test.Connector"%>
-<%@page import="java.sql.Connection"%>
+<%@page import="connector.Connector"%>
+<%@page import="java.sql.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -13,28 +11,28 @@
 <body>
 <%
 String[] searchs = request.getParameterValues("search");
-
-Connection con = Connector.getConnection();
-String sql = "select num, title, content, credat, creusr from board 1=1";
+String searchStr = request.getParameter("searchStr");
+Connection conn = Connector.getConnection();
+String sql = "select num, title, content, credat, cretim, creusr from board where 1=1 ";
 if(searchs!=null){
 for(String search:searchs){
-	sql += " and "+ search + " like concat('%',?,'%')";
+	sql += " and " + search + " like concat('%',?,'%')";
+	}
 }
-}
-PreparedStatement ps = con.prepareStatement(sql);
-String searchStr = request.getParameter("searchStr");
-
+PreparedStatement ps = conn.prepareStatement(sql);
+if(searchs!=null){
 for(int i=0;i<searchs.length;i++){
-	ps.setString((i+1),searchs[i]);//database는 1부터 시작, i+1
+	ps.setString((i+1),searchStr);
+	}
 }
 ResultSet rs = ps.executeQuery();
 %>
 <form>
-		<label for="title">제목</label><input type="checkbox" id="title" name="search"value="title">
-		<label for="content">내용</label><input type="checkbox" id="content"name="search"value="content">
-		<label for="creusr">유저</label><input type="checkbox" id="creusr"name="search"value="creusr">
-		<input type="text" name="searchStr">
-	<button>검색</button>
+	<label for="title">제목</label><input type="checkbox" id="title" name="search" value="title">
+	<label for="content">내용</label><input type="checkbox" id="content" name="search" value="content">
+	<label for="creusr">유저</label><input type="checkbox" id="creusr" name="search" value="creusr">
+	<input type="text" name="searchStr">
+<button>검색</button>
 </form>
 <table border="1">
 	<tr>
@@ -44,9 +42,9 @@ ResultSet rs = ps.executeQuery();
 		<th>작성일</th>
 		<th>작성자</th>
 	</tr>
-	<%
-	while(rs.next()){
-	%>
+<%
+while(rs.next()){
+%>
 	<tr>
 		<td><%=rs.getInt("num") %></td>
 		<td><%=rs.getString("title") %></td>
@@ -54,9 +52,9 @@ ResultSet rs = ps.executeQuery();
 		<td><%=rs.getString("credat") %></td>
 		<td><%=rs.getString("creusr") %></td>
 	</tr>
-	<%
-	}
-	%>
-	</table>
+<%
+}
+%>
+</table>
 </body>
 </html>
